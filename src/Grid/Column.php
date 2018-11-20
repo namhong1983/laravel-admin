@@ -6,8 +6,8 @@ use Closure;
 use Encore\Admin\Grid;
 use Encore\Admin\Grid\Displayers\AbstractDisplayer;
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
+use Jenssegers\Mongodb\Eloquent\Model;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
 class Column
@@ -76,9 +76,9 @@ class Column
     /**
      * Original grid data.
      *
-     * @var Collection
+     * @var array
      */
-    protected static $originalGridModels;
+    protected static $originalGridData = [];
 
     /**
      * @var []Closure
@@ -171,11 +171,11 @@ class Column
     /**
      * Set original data for column.
      *
-     * @param Collection $collection
+     * @param array $input
      */
-    public static function setOriginalGridModels(Collection $collection)
+    public static function setOriginalGridData(array $input)
     {
-        static::$originalGridModels = $collection;
+        static::$originalGridData = $input;
     }
 
     /**
@@ -303,28 +303,6 @@ class Column
     }
 
     /**
-     * Display using display abstract.
-     *
-     * @param string $abstract
-     * @param array  $arguments
-     *
-     * @return Column
-     */
-    public function displayUsing($abstract, $arguments = [])
-    {
-        $grid = $this->grid;
-
-        $column = $this;
-
-        return $this->display(function ($value) use ($grid, $column, $abstract, $arguments) {
-            /** @var AbstractDisplayer $displayer */
-            $displayer = new $abstract($value, $grid, $column, $this);
-
-            return $displayer->display(...$arguments);
-        });
-    }
-
-    /**
      * Display column using array value map.
      *
      * @param array $values
@@ -382,13 +360,12 @@ class Column
         foreach ($this->displayCallbacks as $callback) {
             $previous = $value;
 
-            $callback = $this->bindOriginalRowModel($callback, $key);
+            $callback = $this->bindOriginalRow($callback, $key);
             $value = call_user_func_array($callback, [$value, $this]);
 
             if (($value instanceof static) &&
                 ($last = array_pop($this->displayCallbacks))
             ) {
-                $last = $this->bindOriginalRowModel($last, $key);
                 $value = call_user_func($last, $previous);
             }
         }
@@ -404,11 +381,11 @@ class Column
      *
      * @return Closure
      */
-    protected function bindOriginalRowModel(Closure $callback, $key)
+    protected function bindOriginalRow(Closure $callback, $key)
     {
-        $rowModel = static::$originalGridModels[$key];
+        $originalRow = static::$originalGridData[$key];
 
-        return $callback->bindTo($rowModel);
+        return $callback->bindTo(static::$model->newFromBuilder($originalRow));
     }
 
     /**
@@ -506,12 +483,12 @@ class Column
     /**
      * Create the column sorter.
      *
-     * @return string
+     * @return string|void
      */
     public function sorter()
     {
         if (!$this->sortable) {
-            return '';
+            return;
         }
 
         $icon = 'fa-sort';
@@ -525,7 +502,7 @@ class Column
         $query = app('request')->all();
         $query = array_merge($query, [$this->grid->model()->getSortName() => ['column' => $this->name, 'type' => $type]]);
 
-        $url = url()->current().'?'.http_build_query($query);
+        $url = URL::current().'?'.http_build_query($query);
 
         return "<a class=\"fa fa-fw $icon\" href=\"$url\"></a>";
     }
@@ -607,7 +584,6 @@ class Column
             $column = $this;
 
             return $this->display(function ($value) use ($abstract, $grid, $column, $arguments) {
-                /** @var AbstractDisplayer $displayer */
                 $displayer = new $abstract($value, $grid, $column, $this);
 
                 return $displayer->display(...$arguments);

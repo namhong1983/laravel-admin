@@ -3,64 +3,75 @@
 namespace Encore\Admin\Grid\Tools;
 
 use Encore\Admin\Grid;
-use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Database\Query\Builder;
 
 class Footer extends AbstractTool
 {
-    /**
-     * @var Builder
-     */
-    protected $queryBuilder;
+    protected $colspan = 1;
 
-    /**
-     * Footer constructor.
-     *
-     * @param Grid $grid
-     */
+    protected $tds = [];
+
     public function __construct(Grid $grid)
     {
         $this->grid = $grid;
     }
 
-    /**
-     * Get model query builder.
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function queryBuilder()
+    public function td($content = '', $colspan = 1)
     {
-        if (!$this->queryBuilder) {
-            $this->queryBuilder = $this->grid->model()->getQueryBuilder();
-        }
+        $this->tds[] = get_defined_vars();
 
-        return $this->queryBuilder;
+        return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    public function colspan($colspan)
+    {
+        if ($td = array_pop($this->tds)) {
+            $td['colspan'] = $colspan;
+
+            array_push($this->tds, $td);
+        }
+
+        return $this;
+    }
+
+    public function column($column)
+    {
+        $data = $this->grid->model()->buildData();
+
+        return collect(array_column($data, $column));
+    }
+
+    protected function hasRowSelectorColumn()
+    {
+        return $this->grid->columns()->first()->getName() == Grid\Column::SELECT_COLUMN_NAME;
+    }
+
+    protected function fillTds()
+    {
+        $columnCount = $this->grid->columns()->count();
+
+        $tdCount = array_sum(array_column($this->tds, 'colspan'));
+
+        foreach (range(1, $columnCount - $tdCount) as $_) {
+            $this->td();
+        }
+    }
+
     public function render()
     {
-        $content = call_user_func($this->grid->footer(), $this->queryBuilder());
-
-        if (empty($content)) {
-            return '';
+        if ($this->hasRowSelectorColumn()) {
+            $this->td();
         }
 
-        if ($content instanceof Renderable) {
-            $content = $content->render();
+        call_user_func($this->grid->footer(), $this);
+
+        $this->fillTds();
+
+        $tr = '';
+
+        foreach ($this->tds as $td) {
+            $tr .= "<td colspan=\"{$td['colspan']}\">{$td['content']}</td>\r\n";
         }
 
-        if ($content instanceof Htmlable) {
-            $content = $content->toHtml();
-        }
-
-        return <<<HTML
-    <div class="box-footer clearfix">
-        {$content}
-    </div>
-HTML;
+        return "<tr>$tr</tr>";
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Encore\Admin\Auth\Database;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Jenssegers\Mongodb\Eloquent\Model;
+use Jenssegers\Mongodb\Relations\BelongsToMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -42,7 +42,7 @@ class Permission extends Model
      *
      * @return BelongsToMany
      */
-    public function roles() : BelongsToMany
+    public function roles()
     {
         $pivotTable = config('admin.database.role_permissions_table');
 
@@ -94,7 +94,7 @@ class Permission extends Model
      *
      * @return bool
      */
-    protected function matchRequest(array $match, Request $request) : bool
+    protected function matchRequest(array $match, Request $request)
     {
         if (!$request->is(trim($match['path'], '/'))) {
             return false;

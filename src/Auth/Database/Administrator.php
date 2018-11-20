@@ -5,8 +5,8 @@ namespace Encore\Admin\Auth\Database;
 use Encore\Admin\Traits\AdminBuilder;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Jenssegers\Mongodb\Eloquent\Model;
+use Jenssegers\Mongodb\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -59,7 +59,7 @@ class Administrator extends Model implements AuthenticatableContract
      *
      * @return BelongsToMany
      */
-    public function roles() : BelongsToMany
+    public function roles()
     {
         $pivotTable = config('admin.database.role_users_table');
 
@@ -73,7 +73,7 @@ class Administrator extends Model implements AuthenticatableContract
      *
      * @return BelongsToMany
      */
-    public function permissions() : BelongsToMany
+    public function permissions()
     {
         $pivotTable = config('admin.database.user_permissions_table');
 

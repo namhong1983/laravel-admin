@@ -38,23 +38,9 @@ trait UploadField
     protected $useUniqueName = false;
 
     /**
-     * If use sequence name to store upload file.
-     *
-     * @var bool
-     */
-    protected $useSequenceName = false;
-
-    /**
      * @var bool
      */
     protected $removable = false;
-
-    /**
-     * Controls the storage permission. Could be 'private' or 'public'
-     *
-     * @var string
-     */
-    protected $storage_permission;
 
     /**
      * Initialize the storage instance.
@@ -229,18 +215,6 @@ trait UploadField
     }
 
     /**
-     * Use sequence name for store upload file.
-     *
-     * @return $this
-     */
-    public function sequenceName()
-    {
-        $this->useSequenceName = true;
-
-        return $this;
-    }
-
-    /**
      * Get store name of upload file.
      *
      * @param UploadedFile $file
@@ -251,10 +225,6 @@ trait UploadField
     {
         if ($this->useUniqueName) {
             return $this->generateUniqueName($file);
-        }
-
-        if ($this->useSequenceName) {
-            return $this->generateSequenceName($file);
         }
 
         if ($this->name instanceof \Closure) {
@@ -292,10 +262,6 @@ trait UploadField
     protected function upload(UploadedFile $file)
     {
         $this->renameIfExists($file);
-
-        if (!is_null($this->storage_permission)) {
-            return $this->storage->putFileAs($this->getDirectory(), $file, $this->name, $this->storage_permission);
-        }
 
         return $this->storage->putFileAs($this->getDirectory(), $file, $this->name);
     }
@@ -347,28 +313,6 @@ trait UploadField
     }
 
     /**
-     * Generate a sequence name for uploaded file.
-     *
-     * @param UploadedFile $file
-     *
-     * @return string
-     */
-    protected function generateSequenceName(UploadedFile $file)
-    {
-        $index = 1;
-        $extension = $file->getClientOriginalExtension();
-        $originalName = $file->getClientOriginalName();
-        $newName = $originalName.'_'.$index.'.'.$extension;
-
-        while ($this->storage->exists("{$this->getDirectory()}/$newName")) {
-            $index++;
-            $newName = $originalName.'_'.$index.'.'.$extension;
-        }
-
-        return $newName;
-    }
-
-    /**
      * Destroy original files.
      *
      * @return void.
@@ -378,11 +322,5 @@ trait UploadField
         if ($this->storage->exists($this->original)) {
             $this->storage->delete($this->original);
         }
-    }
-
-    public function storage_permission($permission)
-    {
-        $this->storage_permission = $permission;
-        return $this;
     }
 }

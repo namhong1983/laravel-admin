@@ -141,11 +141,6 @@ $grid->disableCreateButton();
 $grid->disablePagination();
 ```
 
-#### Disable all tools on header of grid. Filter, refresh, export, batch actions
-```php
-$grid->disableTools();
-```
-
 #### Disable data filter
 ```php
 $grid->disableFilter();

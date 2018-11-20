@@ -8,10 +8,6 @@ class Select extends AbstractDisplayer
 {
     public function display($options = [])
     {
-        if ($options instanceof \Closure) {
-            $options = $options->call($this, $this->row);
-        }
-
         $name = $this->column->getName();
 
         $class = "grid-select-{$name}";

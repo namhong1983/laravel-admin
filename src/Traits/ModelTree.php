@@ -2,7 +2,7 @@
 
 namespace Encore\Admin\Traits;
 
-use Illuminate\Database\Eloquent\Model;
+use Jenssegers\Mongodb\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 
@@ -16,7 +16,7 @@ trait ModelTree
     /**
      * @var string
      */
-    protected $parentColumn = 'parent_id';
+    protected $parentColumn = 'parentid';
 
     /**
      * @var string
@@ -36,7 +36,7 @@ trait ModelTree
     /**
      * Get children of current node.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Jenssegers\Mongodb\Eloquent\Relations\HasMany
      */
     public function children()
     {
@@ -46,7 +46,7 @@ trait ModelTree
     /**
      * Get parent of current node.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Jenssegers\Mongodb\Eloquent\Relations\BelongsTo
      */
     public function parent()
     {
@@ -173,7 +173,8 @@ trait ModelTree
      */
     public function allNodes()
     {
-        $orderColumn = DB::getQueryGrammar()->wrap($this->orderColumn);
+        return static::orderBy($this->orderColumn)->get()->toArray();
+        /*$orderColumn = DB::getQueryGrammar()->wrap($this->orderColumn);
         $byOrder = $orderColumn.' = 0,'.$orderColumn;
 
         $self = new static();
@@ -182,7 +183,7 @@ trait ModelTree
             $self = call_user_func($this->queryCallback, $self);
         }
 
-        return $self->orderByRaw($byOrder)->get()->toArray();
+        return $self->orderByRaw($byOrder)->get()->toArray();*/
     }
 
     /**
@@ -229,16 +230,13 @@ trait ModelTree
     /**
      * Get options for Select field in form.
      *
-     * @param \Closure|null $closure
-     * @param string        $rootText
-     *
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
-    public static function selectOptions(\Closure $closure = null, $rootText = 'Root')
+    public static function selectOptions()
     {
-        $options = (new static())->withQuery($closure)->buildSelectOptions();
+        $options = (new static())->buildSelectOptions();
 
-        return collect($options)->prepend($rootText, 0)->all();
+        return collect($options)->prepend('Root', 0)->all();
     }
 
     /**

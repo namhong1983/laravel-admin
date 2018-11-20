@@ -2,7 +2,7 @@
 
 namespace Encore\Admin\Form\Field;
 
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Jenssegers\Mongodb\Relations\BelongsToMany;
 
 class MultipleSelect extends Select
 {
@@ -42,7 +42,6 @@ class MultipleSelect extends Select
     public function fill($data)
     {
         $relations = array_get($data, $this->column);
-
         if (is_string($relations)) {
             $this->value = explode(',', $relations);
         }

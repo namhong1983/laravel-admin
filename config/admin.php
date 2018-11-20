@@ -95,13 +95,8 @@ return [
     | Authentication settings for all admin pages. Include an authentication
     | guard and a user provider setting of authentication driver.
     |
-    | You can specify a controller for `login` `logout` and other auth routes.
-    |
     */
     'auth' => [
-
-        'controller' => App\Admin\Controllers\AuthController::class,
-
         'guards' => [
             'admin' => [
                 'driver'   => 'session',
@@ -188,11 +183,6 @@ return [
         'enable' => true,
 
         /*
-         * Only logging allowed methods in the list
-         */
-        'allowed_methods' => ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH'],
-
-        /*
          * Routes that will not log to database.
          *
          * All method to path like: admin/auth/logs
@@ -219,7 +209,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | This value is the skin of admin pages.
-    | @see https://adminlte.io/docs/2.4/layout
+    | @see https://adminlte.io/docs/2.4/skin
     |
     | Supported:
     |    "skin-blue", "skin-blue-light", "skin-yellow", "skin-yellow-light",
@@ -255,52 +245,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Show version at footer
+    | Version
     |--------------------------------------------------------------------------
     |
-    | Whether to display the version number of laravel-admim at the footer of
-    | each page
-    |
-    */
-    'show_version' => true,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Show environment at footer
-    |--------------------------------------------------------------------------
-    |
-    | Whether to display the environment at the footer of each page
+    | This version number set will appear in the page footer.
     |
     */
-    'show_environment' => true,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Menu bind to permission
-    |--------------------------------------------------------------------------
-    |
-    | whether enable menu bind to a permission
-    */
-    'menu_bind_permission' => true,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Enable default breadcrumb
-    |--------------------------------------------------------------------------
-    |
-    | Whether enable default breadcrumb for every page content.
-    */
-    'enable_default_breadcrumb' => true,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Extension Directory
-    |--------------------------------------------------------------------------
-    |
-    | When you use command `php artisan admin:extend` to generate extensions,
-    | the extension files will be generated in this directory.
-    */
-    'extension_dir' => app_path('Admin/Extensions'),
+    'version' => '1.5.x-dev',
 
     /*
     |--------------------------------------------------------------------------

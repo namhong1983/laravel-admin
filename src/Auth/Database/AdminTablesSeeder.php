@@ -2,7 +2,7 @@
 
 namespace Encore\Admin\Auth\Database;
 
-use Illuminate\Database\Seeder;
+use Jenssegers\Mongodb\Seeder;
 
 class AdminTablesSeeder extends Seeder
 {

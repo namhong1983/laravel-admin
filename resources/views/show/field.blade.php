@@ -5,19 +5,11 @@
         <div class="box box-solid box-default no-margin box-show">
             <!-- /.box-header -->
             <div class="box-body">
-                @if($escape)
-                    {{ $content }}&nbsp;
-                @else
-                    {!! $content !!}&nbsp;
-                @endif
+                {!! $content !!}&nbsp;
             </div><!-- /.box-body -->
         </div>
         @else
-            @if($escape)
-                {{ $content }}
-            @else
-                {!! $content !!}
-            @endif
+            {!! $content !!}
         @endif
     </div>
 </div>

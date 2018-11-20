@@ -5,7 +5,7 @@ namespace Encore\Admin;
 use Closure;
 use Encore\Admin\Tree\Tools;
 use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Database\Eloquent\Model;
+use Jenssegers\Mongodb\Eloquent\Model;
 
 class Tree implements Renderable
 {
@@ -119,6 +119,7 @@ class Tree implements Renderable
 
                 return "$key - $title";
             };
+
         }
     }
 
@@ -253,7 +254,7 @@ class Tree implements Renderable
                             },
                             success: function (data) {
                                 $.pjax.reload('#pjax-container');
-                                toastr.success('{$deleteSucceeded}');
+
                                 resolve(data);
                             }
                         });
@@ -290,7 +291,8 @@ class Tree implements Renderable
         });
 
         $('.{$this->elementId}-tree-tools').on('click', function(e){
-            var action = $(this).data('action');
+            var target = $(e.target),
+                action = target.data('action');
             if (action === 'expand') {
                 $('.dd').nestable('expandAll');
             }
@@ -367,7 +369,6 @@ SCRIPT;
             'branchView'     => $this->view['branch'],
             'branchCallback' => $this->branchCallback,
         ]);
-
         return view($this->view['tree'], $this->variables())->render();
     }
 

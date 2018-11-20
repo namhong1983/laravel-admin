@@ -54,6 +54,7 @@ class Radio extends Field
         return $this;
     }
 
+
     /**
      * Draw inline radios.
      *

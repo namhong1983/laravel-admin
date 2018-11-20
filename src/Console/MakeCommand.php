@@ -3,7 +3,7 @@
 namespace Encore\Admin\Console;
 
 use Illuminate\Console\GeneratorCommand;
-use Illuminate\Database\Eloquent\Model;
+use Jenssegers\Mongodb\Eloquent\Model;
 
 class MakeCommand extends GeneratorCommand
 {

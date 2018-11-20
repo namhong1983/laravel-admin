@@ -4,8 +4,8 @@ namespace Encore\Admin\Auth\Database;
 
 use Encore\Admin\Traits\AdminBuilder;
 use Encore\Admin\Traits\ModelTree;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Jenssegers\Mongodb\Eloquent\Model;
+use Jenssegers\Mongodb\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -26,7 +26,7 @@ class Menu extends Model
      *
      * @var array
      */
-    protected $fillable = ['parent_id', 'order', 'title', 'icon', 'uri', 'permission'];
+    protected $fillable = ['parent_id', 'order', 'title', 'icon', 'uri'];
 
     /**
      * Create a new Eloquent model instance.
@@ -49,7 +49,7 @@ class Menu extends Model
      *
      * @return BelongsToMany
      */
-    public function roles() : BelongsToMany
+    public function roles()
     {
         $pivotTable = config('admin.database.role_menu_table');
 
@@ -61,24 +61,15 @@ class Menu extends Model
     /**
      * @return array
      */
-    public function allNodes() : array
+    public function allNodes()
     {
-        $connection = config('admin.database.connection') ?: config('database.default');
+        /*$connection = config('admin.database.connection') ?: config('database.default');
         $orderColumn = DB::connection($connection)->getQueryGrammar()->wrap($this->orderColumn);
 
         $byOrder = $orderColumn.' = 0,'.$orderColumn;
 
-        return static::with('roles')->orderByRaw($byOrder)->get()->toArray();
-    }
-
-    /**
-     * determine if enable menu bind permission.
-     *
-     * @return bool
-     */
-    public function withPermission()
-    {
-        return (bool) config('admin.menu_bind_permission');
+        return static::with('roles')->orderByRaw($byOrder)->get()->toArray();*/
+        return static::orderBy($this->orderColumn)->get()->toArray();
     }
 
     /**

@@ -20,7 +20,6 @@ return [
     'edit'                  => 'Edit',
     'view'                  => 'View',
     'continue_editing'      => 'Continue editing',
-    'continue_creating'     => 'Continue creating',
     'detail'                => 'Detail',
     'browse'                => 'Browse',
     'reset'                 => 'Reset',

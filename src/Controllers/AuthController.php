@@ -2,6 +2,7 @@
 
 namespace Encore\Admin\Controllers;
 
+use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Layout\Content;
@@ -49,7 +50,10 @@ class AuthController extends Controller
             return back()->withInput()->withErrors($validator);
         }
 
-        if ($this->guard()->attempt($credentials)) {
+        if($this->guard()->attempt([
+            'email'    => $request->input('email'),
+            'password' => $request->input('password')
+        ], $request->has('remember'))){
             return $this->sendLoginResponse($request);
         }
 
@@ -110,9 +114,7 @@ class AuthController extends Controller
      */
     protected function settingForm()
     {
-        $class = config('admin.database.users_model');
-
-        $form = new Form(new $class());
+        $form = new Form(new Administrator());
 
         $form->display('username', trans('admin.username'));
         $form->text('name', trans('admin.name'))->rules('required');
@@ -189,7 +191,7 @@ class AuthController extends Controller
      */
     protected function username()
     {
-        return 'username';
+        return 'email';
     }
 
     /**

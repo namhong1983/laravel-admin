@@ -103,13 +103,6 @@ class Filter implements Renderable
     protected $layout;
 
     /**
-     * Primary key of giving model.
-     *
-     * @var mixed
-     */
-    protected $primaryKey;
-
-    /**
      * Create a new filter instance.
      *
      * @param Model $model
@@ -118,11 +111,11 @@ class Filter implements Renderable
     {
         $this->model = $model;
 
-        $this->primaryKey = $this->model->eloquent()->getKeyName();
+        $pk = $this->model->eloquent()->getKeyName();
 
         $this->initLayout();
 
-        $this->equal($this->primaryKey, strtoupper($this->primaryKey));
+        $this->equal($pk, strtoupper($pk));
         $this->scopes = new Collection();
     }
 
@@ -206,14 +199,10 @@ class Filter implements Renderable
 
     /**
      * Disable Id filter.
-     *
-     * @return $this
      */
     public function disableIdFilter()
     {
         $this->useIdFilter = false;
-
-        return $this;
     }
 
     /**
@@ -222,26 +211,9 @@ class Filter implements Renderable
     public function removeIDFilterIfNeeded()
     {
         if (!$this->useIdFilter && !$this->idFilterRemoved) {
-            $this->removeFilterByID($this->primaryKey);
-
-            foreach ($this->layout->columns() as $column) {
-                $column->removeFilterByID($this->primaryKey);
-            }
-
+            array_shift($this->filters);
             $this->idFilterRemoved = true;
         }
-    }
-
-    /**
-     * Remove filter by filter id.
-     *
-     * @param mixed $id
-     */
-    protected function removeFilterByID($id)
-    {
-        $this->filters = array_filter($this->filters, function (AbstractFilter $filter) use ($id) {
-            return $filter->getId() != $id;
-        });
     }
 
     /**
